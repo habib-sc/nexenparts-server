@@ -28,7 +28,7 @@ async function run () {
 
         // Parts get
         app.get('/parts', async (req, res) => {
-            const parts = partsCollection.find(query).toArray();
+            const parts = await partsCollection.find().toArray();
             res.send(parts);
         });
         
