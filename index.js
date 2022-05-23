@@ -3,7 +3,7 @@ const cors = require('cors');
 const res = require('express/lib/response');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 const app = express();
 
@@ -11,6 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Root Endpoint 
 app.get('/', (req, res) => {
     res.send('Manufacturer');
 });
@@ -31,6 +32,14 @@ async function run () {
         app.get('/parts', async (req, res) => {
             const parts = await partsCollection.find().toArray();
             res.send(parts);
+        });
+
+        // Parts get by id
+        app.get('/parts/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)};
+            const result = await partsCollection.findOne(filter);
+            res.send(result);
         });
 
         // Reviews get
