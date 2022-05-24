@@ -57,6 +57,14 @@ async function run () {
             res.send(result);
         });
 
+        // Get Orders by user
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;   
+            const query = {email: email};
+            const orders = await ordersCollection.find(query).toArray();
+            res.send(orders);
+          });
+
         // Update Parts quantity 
         app.patch('/parts/update/:id', async (req, res) => {
             const id = req.params.id;
