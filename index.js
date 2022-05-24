@@ -55,7 +55,19 @@ async function run () {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.send(result);
-          });
+        });
+
+        // Update Parts quantity 
+        app.patch('/parts/update/:id', async (req, res) => {
+            const id = req.params.id;
+            const quantity = req.body;
+            const filter = {_id: ObjectId(id)};
+            const updateDocument = {
+              $set: quantity
+            };
+            const updatedItem = await partsCollection.updateOne(filter, updateDocument);
+            res.send(updatedItem);
+        });
         
     }
     finally{
