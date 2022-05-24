@@ -27,6 +27,7 @@ async function run () {
          await client.connect();
          const partsCollection = client.db('NexenCarParts').collection('Parts');
          const reviewsCollection = client.db('NexenCarParts').collection('Reviews');
+         const ordersCollection = client.db('NexenCarParts').collection('Orders');
 
         // Parts get
         app.get('/parts', async (req, res) => {
@@ -47,6 +48,14 @@ async function run () {
             const reviews = await reviewsCollection.find().toArray();
             res.send(reviews);
         });
+
+
+        // Order post 
+        app.post('/order', async (req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
+            res.send(result);
+          });
         
     }
     finally{
