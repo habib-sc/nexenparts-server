@@ -5,6 +5,7 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 const app = express();
 
@@ -49,6 +50,7 @@ async function run () {
          const reviewsCollection = client.db('NexenCarParts').collection('Reviews');
          const ordersCollection = client.db('NexenCarParts').collection('Orders');
          const usersCollection = client.db('NexenCarParts').collection('Users');
+         const paymentsCollection = client.db('NexenCarParts').collection('Payments');
 
         // Parts get
         app.get('/parts', async (req, res) => {
@@ -80,10 +82,27 @@ async function run () {
 
         // Get Orders by user
         app.get('/orders', verifyToken, async (req, res) => {
-            const email = req.query.email;   
-            const query = {email: email};
-            const orders = await ordersCollection.find(query).toArray();
-            res.send(orders);
+            const email = req.query.email;  
+            const decodedEmail = req.decoded.email;
+            
+            if(email == decodedEmail) {
+                const query = {email: email};
+                const orders = await ordersCollection.find(query).toArray();
+                res.send(orders);
+            }
+            else{
+                return res.status(403).send({message: 'Forbidden Access'});
+            }
+            
+        });
+
+
+        // Get Order by id 
+        app.get('/order/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await ordersCollection.findOne(query);
+            res.send(result);
         });
 
         // Upsert users and issue token 
