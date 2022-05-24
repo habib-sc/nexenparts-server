@@ -4,6 +4,7 @@ const res = require('express/lib/response');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -28,6 +29,7 @@ async function run () {
          const partsCollection = client.db('NexenCarParts').collection('Parts');
          const reviewsCollection = client.db('NexenCarParts').collection('Reviews');
          const ordersCollection = client.db('NexenCarParts').collection('Orders');
+         const usersCollection = client.db('NexenCarParts').collection('Users');
 
         // Parts get
         app.get('/parts', async (req, res) => {
@@ -63,7 +65,21 @@ async function run () {
             const query = {email: email};
             const orders = await ordersCollection.find(query).toArray();
             res.send(orders);
-          });
+        });
+
+        // Upsert users and issue token 
+        app.put('/user/:email', async(req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = {email: email};
+            const options = { upsert: true};
+            const updateDocument = {
+                $set: {...user},
+            };
+            const result = await usersCollection.updateOne(filter, updateDocument, options);
+            const token = jwt.sign({email: email}, process.env.TOKEN_SECRET, {expiresIn: '1d' });
+            res.send({result, token});
+        });
 
         // Update Parts quantity 
         app.patch('/parts/update/:id', async (req, res) => {
