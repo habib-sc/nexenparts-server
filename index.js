@@ -90,11 +90,19 @@ async function run () {
         });
 
 
-        // Item Delete by id
+        // Parts or Item Delete by id
         app.delete('/parts/delete/:id', verifyToken, verifyAdmin, async(req, res) => {
             const id = req.params.id;
             const query = {_id: ObjectId(id)};
             const result = await partsCollection.deleteOne(query);
+            res.send(result);
+        } );
+
+
+        // Parts or Product Add 
+        app.post('/add-product', verifyToken, verifyAdmin, async(req, res) => {
+            const product = req.body;
+            const result = await partsCollection.insertOne(product);
             res.send(result);
         } );
 
