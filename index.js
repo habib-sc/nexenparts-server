@@ -130,6 +130,28 @@ async function run () {
             const updatedItem = await partsCollection.updateOne(filter, updateDocument);
             res.send(updatedItem);
         });
+
+
+        // Payment intent api 
+        app.post('/create-payment-intent', async (req, res) => {
+            const order = req.body;
+            const price = order.totalPrice;
+            const amount = price*100;
+
+            if(amount){
+                const paymentIntent = await stripe.paymentIntents.create({
+                    amount: amount,
+                    currency: 'usd',
+                    payment_method_types: ['card']
+                });
+                res.send({clientSecret: paymentIntent.client_secret})
+            }
+            else{
+                res.send({success: false});
+            }
+            
+        });
+
         
     }
     finally{
