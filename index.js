@@ -105,18 +105,19 @@ async function run () {
             res.send(updateDocument);
         });
 
-        // Order update with cancelled status 
-        app.patch('/order/cancel/:id', verifyToken, async (req, res) => {
+        // Order Delete 
+        app.delete('/order/delete/:id', verifyToken, async(req, res) => {
             const id = req.params.id;
-            const cancelledData = req.body;
-            console.log(cancelledData, id);
-            const filter = {_id: ObjectId(id)};
-            const updateDocument = {
-              $set: {...cancelledData}
-            };
-            const updatedOrder = await ordersCollection.updateOne(filter, updateDocument);
-            res.send(updatedOrder);
-        });
+            const query = {_id: ObjectId(id)};
+            const order = await ordersCollection.findOne(query);
+
+            // If the not paid then delete 
+            if(!order.paid) {
+                const result = await ordersCollection.deleteOne(query);
+                res.send(result);
+            }
+ 
+        } );
 
 
         // Get Orders by user
