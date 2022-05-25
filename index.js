@@ -115,6 +115,14 @@ async function run () {
         });
 
 
+        // Reviews Add 
+        app.post('/add-review', verifyToken, async(req, res) => {
+            const review = req.body;
+            const result = await reviewsCollection.insertOne(review);
+            res.send(result);
+        } );
+
+
         // Order post 
         app.post('/order', verifyToken, async (req, res) => {
             const order = req.body;
