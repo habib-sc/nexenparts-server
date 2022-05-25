@@ -52,6 +52,15 @@ async function run () {
          const usersCollection = client.db('NexenCarParts').collection('Users');
          const paymentsCollection = client.db('NexenCarParts').collection('Payments');
 
+
+        // check admin or not 
+        app.get('/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const user = await usersCollection.findOne({email: email});
+        const isAdmin = user.role === 'admin';
+        res.send({admin: isAdmin});
+        });
+
         // Parts get
         app.get('/parts', async (req, res) => {
             const parts = await partsCollection.find().toArray();
