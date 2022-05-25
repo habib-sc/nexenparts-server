@@ -96,6 +96,19 @@ async function run () {
             res.send(updateDocument);
         });
 
+        // Order update with cancelled status 
+        app.patch('/order/cancel/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const cancelledData = req.body;
+            console.log(cancelledData, id);
+            const filter = {_id: ObjectId(id)};
+            const updateDocument = {
+              $set: {...cancelledData}
+            };
+            const updatedOrder = await ordersCollection.updateOne(filter, updateDocument);
+            res.send(updatedOrder);
+        });
+
 
         // Get Orders by user
         app.get('/orders', verifyToken, async (req, res) => {
