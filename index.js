@@ -53,6 +53,20 @@ async function run () {
          const paymentsCollection = client.db('NexenCarParts').collection('Payments');
 
 
+         // Verify Admin 
+        const verifyAdmin =  async(req, res, next) => {
+            const requester = req.decoded.email;
+            const requesterAccount = await usersCollection.findOne({email: requester});
+  
+            if (requesterAccount.role == 'admin') {
+              next();
+            }
+            else{
+              return res.status(403).send({message: 'Forbidden Access!'});
+            }
+        };
+
+
         // check admin or not 
         app.get('/admin/:email', async (req, res) => {
         const email = req.params.email;
@@ -83,7 +97,7 @@ async function run () {
 
 
         // Order post 
-        app.post('/order', async (req, res) => {
+        app.post('/order', verifyToken, async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.send(result);
@@ -133,7 +147,12 @@ async function run () {
             else{
                 return res.status(403).send({message: 'Forbidden Access'});
             }
-            
+        });
+
+        // Get Orders All orders for admin
+        app.get('/all-orders', verifyToken, verifyAdmin, async (req, res) => {
+            const orders = await ordersCollection.find().toArray();
+            res.send(orders);
         });
 
 
@@ -160,7 +179,7 @@ async function run () {
         });
 
         // Update Parts quantity 
-        app.patch('/parts/update/:id', async (req, res) => {
+        app.patch('/parts/update/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
             const quantity = req.body;
             const filter = {_id: ObjectId(id)};
