@@ -167,6 +167,13 @@ async function run () {
         } );
 
 
+        // all user get 
+        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+            const users = await usersCollection.find().toArray();
+            res.send(users);
+        });
+
+
         // Get Orders by user
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;  
