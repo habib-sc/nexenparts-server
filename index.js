@@ -119,6 +119,20 @@ async function run () {
             res.send(updateDocument);
         });
 
+
+        // Order update with approved status 
+        app.patch('/order/approve/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const approveData = req.body;
+            const filter = {_id: ObjectId(id)};
+            const updateDocument = {
+              $set: {...approveData}
+            };
+            const updatedOrder = await ordersCollection.updateOne(filter, updateDocument);
+            res.send(approveData);
+        });
+
+
         // Order Delete 
         app.delete('/order/delete/:id', verifyToken, async(req, res) => {
             const id = req.params.id;
