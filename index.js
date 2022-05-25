@@ -173,6 +173,17 @@ async function run () {
             res.send(users);
         });
 
+        // make user admin 
+        app.put('/user/admin/:email', verifyToken, verifyAdmin, async(req, res) => {
+            const email = req.params.email;
+            const filter = {email: email};
+            const updateDocument = {
+                $set: {role: 'admin'},
+            };
+            const result = await usersCollection.updateOne(filter, updateDocument);
+            res.send(result);        
+        });
+
 
         // Get Orders by user
         app.get('/orders', verifyToken, async (req, res) => {
