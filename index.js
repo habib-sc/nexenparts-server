@@ -80,6 +80,23 @@ async function run () {
             res.send(result);
         });
 
+        // Order update with payment 
+        app.patch('/order/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = {_id: ObjectId(id)};
+            const updateDocument = {
+              $set: {
+                paid: true,
+                transactionId: payment.transactionId
+              }
+            };
+            const result = await paymentsCollection.insertOne(payment);
+            const updatedOrder = await ordersCollection.updateOne(filter, updateDocument);
+            res.send(updateDocument);
+        });
+
+
         // Get Orders by user
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;  
@@ -133,7 +150,7 @@ async function run () {
 
 
         // Payment intent api 
-        app.post('/create-payment-intent', async (req, res) => {
+        app.post('/create-payment-intent', verifyToken, async (req, res) => {
             const order = req.body;
             const price = order.totalPrice;
             const amount = price*100;
