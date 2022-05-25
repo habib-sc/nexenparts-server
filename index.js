@@ -89,6 +89,17 @@ async function run () {
             res.send(result);
         });
 
+
+        // Item Delete by id
+        app.delete('/parts/delete/:id', verifyToken, verifyAdmin, async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await partsCollection.deleteOne(query);
+            res.send(result);
+        } );
+
+
+
         // Reviews get
         app.get('/reviews', async (req, res) => {
             const reviews = await reviewsCollection.find().toArray();
