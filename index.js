@@ -51,6 +51,9 @@ async function run () {
          const ordersCollection = client.db('NexenCarParts').collection('Orders');
          const usersCollection = client.db('NexenCarParts').collection('Users');
          const paymentsCollection = client.db('NexenCarParts').collection('Payments');
+         const mySkillsCollection = client.db('NexenCarParts').collection('MySkills');
+         const myToolsCollection = client.db('NexenCarParts').collection('MyTools');
+         const myProjectsCollection = client.db('NexenCarParts').collection('MyProjects');
 
 
          // Verify Admin 
@@ -278,6 +281,25 @@ async function run () {
                 res.send({success: false});
             }
             
+        });
+
+
+        // my skills get
+        app.get('/skills', async (req, res) => {
+            const skills = await mySkillsCollection.find().toArray();
+            res.send(skills);
+        });
+
+        // my tools get
+        app.get('/tools', async (req, res) => {
+            const tools = await myToolsCollection.find().toArray();
+            res.send(tools);
+        });
+
+        // my projects get
+        app.get('/projects', async (req, res) => {
+            const projects = await myProjectsCollection.find().toArray();
+            res.send(projects);
         });
 
         
