@@ -237,6 +237,16 @@ async function run () {
             res.send({result, token});
         });
 
+
+        // get user info
+        app.get('/user-info/:email', verifyToken, async(req, res) => {
+            const email = req.params.email;
+            const filter = {email: email};
+            const userInfo = await usersCollection.findOne(filter);
+            res.send(userInfo);
+        });
+
+
         // Update Parts quantity 
         app.patch('/parts/update/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
